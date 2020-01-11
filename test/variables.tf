@@ -8,17 +8,28 @@ variable "second_zone" {
 variable "def_pass" {}
 variable "my_domain" {}
 variable "sorry_server_ip" {}
-variable "my_account" {}
 
-variable "group_tag" {
+variable "label" {
+  default = {
+    namespace = "to-self"
+    stage     = "dev"
+    name      = "test"
+  }
+}
+
+variable "server_add_tag" {
+  default = ["@auto-reboot"]
+}
+
+variable "group_add_tag" {
   default = ["@group=a", "@group=b"]
 }
 
 variable "ssh_pubkey_path" {}
 variable "sshkey" {
   default = {
-    name = "example001"
-    memo = "example001"
+    name = "example"
+    memo = "example"
   }
 }
 
@@ -185,8 +196,8 @@ variable "router" {
 
 variable "vpc_router" {
   default = {
-    name = "example_vpc"
-    memo = "example_vpc"
+    name = "example"
+    memo = "example"
     plan = "premium"
     vrid = 1
   }

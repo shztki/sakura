@@ -19,9 +19,9 @@ output "router_ipaddresses" {
 #}
 
 output "elb_fqdn" {
-  value = sakuracloud_proxylb.foobar.fqdn
+  value = sakuracloud_proxylb.elb.fqdn
 }
 
 output "elb_networks" {
-  value = sakuracloud_proxylb.foobar.proxy_networks
+  value = sakuracloud_proxylb.elb.proxy_networks
 }

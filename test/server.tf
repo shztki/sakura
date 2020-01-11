@@ -1,13 +1,13 @@
 resource "sakuracloud_server" "server" {
   count             = var.server["count"]
-  name              = format("%s%03d", var.server["name"], count.index + 1)
+  name              = format("%s-%s-%03d", module.label.id, var.server["name"], count.index + 1)
   disks             = [element(sakuracloud_disk.disk.*.id, count.index)]
   core              = var.server["core"]
   memory            = var.server["memory"]
   interface_driver  = var.server["interface_driver"]
   packet_filter_ids = [sakuracloud_packet_filter.myfilter.id]
   description       = format("%s%03d", var.server["memo"], count.index + 1)
-  tags              = ["@auto-reboot", var.my_account, format("%s%03d", var.server["name"], count.index + 1), var.my_domain]
+  tags              = concat(var.server_add_tag, module.label.attributes)
   hostname          = format("%s%03d.%s", var.server["name"], count.index + 1, var.my_domain)
   ssh_key_ids       = [sakuracloud_ssh_key.mykey.id]
   password          = var.def_pass
@@ -21,14 +21,14 @@ resource "sakuracloud_server" "server" {
 resource "sakuracloud_server" "server02" {
   zone              = var.second_zone
   count             = var.server02["count"]
-  name              = format("%s%03d", var.server02["name"], count.index + 1)
+  name              = format("%s-%s-%03d", module.label.id, var.server02["name"], count.index + 1)
   disks             = [element(sakuracloud_disk.disk02.*.id, count.index)]
   core              = var.server02["core"]
   memory            = var.server02["memory"]
   interface_driver  = var.server02["interface_driver"]
   packet_filter_ids = [sakuracloud_packet_filter.myfilter02.id]
   description       = format("%s%03d", var.server02["memo"], count.index + 1)
-  tags              = ["@auto-reboot", var.my_account, format("%s%03d", var.server02["name"], count.index + 1), var.my_domain]
+  tags              = concat(var.server_add_tag, module.label.attributes)
   hostname          = format("%s%03d.%s", var.server02["name"], count.index + 1, var.my_domain)
   ssh_key_ids       = [sakuracloud_ssh_key.mykey.id]
   password          = var.def_pass
@@ -41,7 +41,7 @@ resource "sakuracloud_server" "server02" {
 
 resource "sakuracloud_server" "vpc_server" {
   count            = var.vpc_server["count"]
-  name             = format("%s%03d", var.vpc_server["name"], count.index + 1)
+  name             = format("%s-%s-%03d", module.label.id, var.vpc_server["name"], count.index + 1)
   disks            = [element(sakuracloud_disk.vpc_disk.*.id, count.index)]
   core             = var.vpc_server["core"]
   memory           = var.vpc_server["memory"]
@@ -53,7 +53,7 @@ resource "sakuracloud_server" "vpc_server" {
   #nw_mask_len       = "24"
   #packet_filter_ids = [sakuracloud_packet_filter.myfilter.id]
   description     = format("%s%03d", var.vpc_server["memo"], count.index + 1)
-  tags            = ["@auto-reboot", var.group_tag[count.index % 2], var.my_account, format("%s%03d", var.vpc_server["name"], count.index + 1), var.my_domain]
+  tags            = concat(var.server_add_tag, module.label.attributes, [var.group_add_tag[count.index % length(var.group_add_tag)]])
   hostname        = format("%s%03d.%s", var.vpc_server["name"], count.index + 1, var.my_domain)
   ssh_key_ids     = [sakuracloud_ssh_key.mykey.id]
   password        = var.def_pass

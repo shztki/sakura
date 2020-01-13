@@ -1,5 +1,5 @@
 resource "sakuracloud_internet" "router" {
-  name = var.router["name"]
+  name = module.label.id
 
   #ネットワークマスク
   nw_mask_len = var.router["nw_mask_len"]
@@ -11,5 +11,14 @@ resource "sakuracloud_internet" "router" {
   enable_ipv6 = var.router["enable_ipv6"]
 
   description = var.router["memo"]
-  tags        = [var.my_account, var.my_domain]
+  tags        = module.label.attributes
 }
+
+# after router create
+# ルータ＋スイッチの、スイッチ側のパラメータが変更できないので、あとからインポートして変更したいときに利用
+resource "sakuracloud_switch" "router" {
+  name        = module.label.id
+  tags        = module.label.attributes
+  description = var.router["memo"]
+}
+

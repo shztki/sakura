@@ -1,11 +1,11 @@
-resource "sakuracloud_proxylb" "foobar" {
-  name           = var.elb["name"]
+resource "sakuracloud_proxylb" "elb" {
+  name           = module.label.id
   plan           = var.elb["plan"]
   vip_failover   = var.elb["vip_failover"]
   sticky_session = var.elb["sticky_session"]
   timeout        = var.elb["timeout"]
   description    = var.elb["memo"]
-  tags           = [var.my_account, var.my_domain]
+  tags           = module.label.attributes
 
   health_check {
     protocol = "http"
@@ -44,7 +44,7 @@ resource "sakuracloud_proxylb" "foobar" {
 }
 
 resource "sakuracloud_proxylb_acme" "cert" {
-  proxylb_id       = sakuracloud_proxylb.foobar.id
+  proxylb_id       = sakuracloud_proxylb.elb.id
   accept_tos       = true
   common_name      = format("elb.%s", var.my_domain)
   update_delay_sec = 120

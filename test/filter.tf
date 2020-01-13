@@ -1,5 +1,5 @@
 resource "sakuracloud_packet_filter" "myfilter" {
-  name        = var.filter["name"]
+  name        = module.label.id
   description = var.filter["memo"]
 
   dynamic "expressions" {
@@ -16,7 +16,7 @@ resource "sakuracloud_packet_filter" "myfilter" {
 
 resource "sakuracloud_packet_filter" "myfilter02" {
   zone        = var.second_zone
-  name        = var.filter["name"]
+  name        = module.label.id
   description = var.filter["memo"]
 
   dynamic "expressions" {

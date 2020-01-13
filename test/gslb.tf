@@ -1,5 +1,5 @@
 resource "sakuracloud_gslb" "gslb" {
-  name = var.gslb["name"]
+  name = module.label.id
 
   health_check {
     protocol   = "http"
@@ -13,7 +13,7 @@ resource "sakuracloud_gslb" "gslb" {
   weighted     = true
   sorry_server = var.sorry_server_ip
   description  = var.gslb["memo"]
-  tags         = [var.my_account, var.my_domain]
+  tags         = module.label.attributes
 }
 
 resource "sakuracloud_gslb_server" "gslb_server01" {

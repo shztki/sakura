@@ -2,10 +2,10 @@ locals {
   aliases_ip = slice(sakuracloud_internet.router.ipaddresses, 3, length(sakuracloud_internet.router.ipaddresses))
 }
 
-resource "sakuracloud_vpc_router" "foobar" {
-  name        = var.vpc_router["name"]
+resource "sakuracloud_vpc_router" "vpc_router" {
+  name        = module.label.id
   description = var.vpc_router["memo"]
-  tags        = [var.my_account, var.my_domain]
+  tags        = module.label.attributes
   plan        = var.vpc_router["plan"]
 
   internet_connection = true
@@ -41,55 +41,6 @@ resource "sakuracloud_vpc_router" "foobar" {
       global_address  = local.aliases_ip[static_nat.key]
       private_address = format("192.168.202.%d", static_nat.key + 10)
       description     = format("vpc_nat_%03d", static_nat.key + 10)
-    }
-  }
-
-  # ファイアウォール
-  firewall {
-    vpc_router_interface_index = 1
-
-    direction = "send"
-    expressions {
-      protocol    = "tcp"
-      source_nw   = ""
-      source_port = ""
-      dest_nw     = "192.168.202.10"
-      dest_port   = "80"
-      allow       = true
-      logging     = true
-      description = "desc"
-    }
-    expressions {
-      protocol    = "tcp"
-      source_nw   = ""
-      source_port = ""
-      dest_nw     = "192.168.202.11"
-      dest_port   = "80"
-      allow       = true
-      logging     = true
-      description = "desc"
-    }
-
-    expressions {
-      protocol    = "ip"
-      source_nw   = "192.168.202.0/24"
-      source_port = ""
-      dest_nw     = ""
-      dest_port   = ""
-      allow       = true
-      logging     = false
-      description = "desc"
-    }
-
-    expressions {
-      protocol    = "ip"
-      source_nw   = ""
-      source_port = ""
-      dest_nw     = ""
-      dest_port   = ""
-      allow       = false
-      logging     = true
-      description = "desc"
     }
   }
 
@@ -141,4 +92,50 @@ resource "sakuracloud_vpc_router" "foobar" {
   #    prefix   = "172.16.0.0/16"
   #    next_hop = "192.168.11.99"
   #  }
+}
+
+resource "sakuracloud_vpc_router_firewall" "vpc_router_eth0_receive" {
+  vpc_router_id              = sakuracloud_vpc_router.vpc_router.id
+  vpc_router_interface_index = 0
+  direction                  = "receive"
+  expressions {
+    protocol    = "tcp"
+    source_nw   = ""
+    source_port = ""
+    dest_nw     = "192.168.202.10"
+    dest_port   = "80"
+    allow       = true
+    logging     = true
+    description = "desc"
+  }
+  expressions {
+    protocol    = "tcp"
+    source_nw   = ""
+    source_port = ""
+    dest_nw     = "192.168.202.11"
+    dest_port   = "80"
+    allow       = true
+    logging     = true
+    description = "desc"
+  }
+  expressions {
+    protocol    = "ip"
+    source_nw   = "192.168.202.0/24"
+    source_port = ""
+    dest_nw     = ""
+    dest_port   = ""
+    allow       = true
+    logging     = false
+    description = "desc"
+  }
+  expressions {
+    protocol    = "ip"
+    source_nw   = ""
+    source_port = ""
+    dest_nw     = ""
+    dest_port   = ""
+    allow       = false
+    logging     = true
+    description = "desc"
+  }
 }

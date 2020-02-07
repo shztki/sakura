@@ -1,5 +1,6 @@
 provider sakuracloud {
   zone = var.default_zone
+  version = "<2.0.0"
 }
 
 module "label" {
